@@ -1,6 +1,10 @@
 # THIS IS THE MODULE FOR NETWORK STUFF
 
+require 'nokogiri'
+require 'json'
+require 'fuzzystringmatch'
 require 'net/http' 
+require 'net/https'
 require 'uri'
 
 module Net
@@ -12,6 +16,17 @@ module Net
     # puts res
     # res.each {|key,val| print key,": ",val,"\n"}
     return res
+  end
+  
+  def Net::https_get(uri,params={})
+    path = Net::make_path(uri)
+    http = Net::HTTP.new(uri.host,uri.port)
+    http.use_ssl = true
+    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+    # res = http.get(path,params)
+    request = Net::HTTP::Get.new(uri.request_uri)
+    response = http.request(request)    
+    return response
   end
   
   def Net::http_post(uri,params={})
