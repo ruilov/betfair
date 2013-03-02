@@ -2,7 +2,7 @@
 
 require 'nokogiri'
 require 'json'
-require 'fuzzystringmatch'
+# require 'fuzzystringmatch'
 require 'net/http' 
 require 'net/https'
 require 'uri'
