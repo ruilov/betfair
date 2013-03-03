@@ -6,7 +6,7 @@ require "uri"
 require 'nokogiri'
 require "./net.rb"
 
-if(ARGV.length==0) do id = "26967072"
+if(ARGV.length==0) then id = "26967072"
 else id = ARGV[0] end
 
 STDOUT.sync = true
