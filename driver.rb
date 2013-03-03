@@ -6,13 +6,16 @@ require "uri"
 require 'nokogiri'
 require "./net.rb"
 
+if(ARGV.length==0) do id = "26967072"
+else id = ARGV[0] end
+
 STDOUT.sync = true
 
 while(true) do
   time = Time.new.strftime("%Y-%m-%d %H:%M:%S")
   
   begin
-    uri = URI.parse("http://www.betfair.com/exchange/football/event?id=26967072")
+    uri = URI.parse("http://www.betfair.com/exchange/football/event?id=" + id)
     path = Net::make_path(uri)
     http = Net::HTTP.new(uri.host)
     res = http.get(path)
