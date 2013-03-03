@@ -6,6 +6,8 @@ require "uri"
 require 'nokogiri'
 require "./net.rb"
 
+STDOUT.sync = true
+
 while(true) do
   time = Time.new.strftime("%Y-%m-%d %H:%M:%S")
   
@@ -37,7 +39,6 @@ while(true) do
     puts e
     puts e.backtrace.inspect
   end
-  
   sleep(60) # in seconds
 end
 
