@@ -5,27 +5,7 @@ require "net/http"
 require "uri"
 require 'nokogiri'
 require "./net.rb"
-require "time"
-require "date"
-
-def load_existing(filename) 
-  file = File.new(filename,"r")
-  matches = {}
-  while(line = file.gets) do
-    split = line.split("|")
-    date = Date.parse(split[0].strip)
-    filename = split[1].strip
-    time = Time.parse(split[2].strip)
-    home_name = split[3].strip
-    away_name = split[4].strip
-    event_link = split[5].strip
-    team_names = home_name.gsub(" ","_") + "_x_" + away_name.gsub(" ","_")
-    
-    if(!matches.has_key? date); matches[date] = {} end
-    matches[date][team_names] = [filename,time,home_name,away_name,event_link]
-  end
-  return matches
-end
+require "./utils.rb"
 
 def webpage_request(competition_path) 
   uri = URI.parse(competition_path)
@@ -108,7 +88,7 @@ def write_results(match_dict,filename)
   output_file.close()
 end
 
-match_dict = load_existing("./match_list.txt")
+match_dict = load_match_list("./match_list.txt")
 competition_path = "http://www.betfair.com/exchange/football/competition?id=2490975"
 doc = webpage_request(competition_path)
 new_match_dict = parse_webpage(doc,match_dict)
