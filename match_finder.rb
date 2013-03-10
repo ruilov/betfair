@@ -7,6 +7,8 @@ require 'nokogiri'
 require "./net.rb"
 require "./utils.rb"
 
+MY_TZ_OFFSET = 14400 # note that below there's also a call where I pass EST and true for DST
+
 def webpage_request(competition_path) 
   uri = URI.parse(competition_path)
   path = Net::make_path(uri)
@@ -39,6 +41,7 @@ def parse_webpage(doc,match_dict)
       start_time = start_time[0].content.strip
       if(start_time.end_with?"'") then
         t = Time.now()
+        t -= (t.gmtoff+MY_TZ_OFFSET)
         t -= 60 * start_time.gsub("'","").to_i
         start_time = t.strftime("%H:%M")
       end
