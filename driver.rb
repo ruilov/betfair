@@ -38,8 +38,8 @@ def update_match(link,filename)
     end
   end
   
-  puts "#{matched_val} | #{in_play}"
-  file.write(matched_val + " | " + in_play + "\n")
+  puts "#{time} | #{matched_val} | #{in_play}"
+  file.write(time + " | " + matched_val + " | " + in_play + "\n")
   
   runners = doc.xpath("//td[@class=\"runner-name\"]")
   runners.each do |runner|
@@ -60,8 +60,8 @@ def update_match(link,filename)
       size = back.xpath(".//span[@class=\"size\"]")[0].content.strip.gsub(",","")
       bets += "L | " + price + " | " + size + " | "
     end
-    puts "#{name} | #{bets}"
-    file.write(name + " | " + bets + "\n")
+    puts "#{time} | #{name} | #{bets}"
+    file.write(time + " | " + name + " | " + bets + "\n")
   end
   file.close()
 end
