@@ -17,10 +17,17 @@ def update_match(link,filename)
   http = Net::HTTP.new(uri.host)
   res = http.get(path)
   doc = Nokogiri::HTML(res.body)
-    
+
   markets = doc.xpath("//em[@class=\"market-title\"]")
   markets.each do |market| 
-    if(market.content.strip!="Match Odds") then next end;
+    if(market.content.strip!="Match Odds") then next end
+      
+    in_play = "not_in_play"
+    in_play_nodes = market.parent.parent.xpath(".//span[@title=\"In-play\"]")
+    if(in_play_nodes.length > 0) then
+      if( !in_play_nodes[0]["class"].end_with?("hidden")); in_play = "in_play" end
+    end
+    
     odds_table = market.parent.parent.next.next.xpath(".//table[@class=\"runner-table\"]")[0]
     rows = odds_table.xpath(".//tr[@class]")
     
@@ -30,8 +37,8 @@ def update_match(link,filename)
       
       back_price = cols[1].xpath(".//span[@class=\"price\"]")[0].content.strip
       lay_price = cols[2].xpath(".//span[@class=\"price\"]")[0].content.strip
-      puts "#{time} | #{name} | #{back_price} | #{lay_price}"
-      file.write(time.to_s + " | " + name + " | " + back_price + " | " + lay_price + "\n")
+      puts "#{time} | #{name} | #{back_price} | #{lay_price} | #{in_play}"
+      file.write(time.to_s + " | " + name + " | " + back_price + " | " + lay_price + " | " + in_play + "\n")
     end
     break
   end
@@ -62,7 +69,7 @@ while(true) do
       end
     end
   rescue Exception => e
-    puts "Error at #{time}"
+    puts "Error at #{now}"
     puts e
     puts e.backtrace.inspect
   end
