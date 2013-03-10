@@ -19,3 +19,11 @@ def load_match_list(filename)
   end
   return matches
 end
+
+MY_TZ_OFFSET = 14400 # note that below there's also a call in match_finder.rb I pass EST and true for DST
+
+def get_now() 
+    t = Time.now()
+    t -= (t.gmtoff+MY_TZ_OFFSET)
+    return t
+end

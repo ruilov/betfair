@@ -11,7 +11,7 @@ STDOUT.sync = true
 
 def update_match(link,filename) 
   file = File.new(filename,"a")
-  time = Time.new.strftime("%Y-%m-%d %H:%M:%S")
+  time = get_now().strftime("%Y-%m-%d %H:%M:%S")
   uri = URI.parse("http://www.betfair.com" + link)
   path = Net::make_path(uri)
   http = Net::HTTP.new(uri.host)
@@ -77,7 +77,7 @@ if(ARGV.length > 1) then
 end
 
 while(true) do
-  now = Time.now()
+  now = get_now()
   begin
     match_list = load_match_list("./match_list.txt")
     match_list.each_key do |date| 
