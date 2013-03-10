@@ -37,10 +37,13 @@ def parse_webpage(doc,match_dict)
       start_time = row.xpath(".//span[@class=\"start-time \"]")
       if(start_time.length==0); next end
       start_time = start_time[0].content.strip
+      if(start_time.end_with?"'") then
+        t = Time.now()
+        t -= 60 * start_time.gsub("'","").to_i
+        start_time = t.strftime("%H:%M")
+      end
       
-      # puts row
-      # break
-      event_link = row.xpath(".//a")
+      event_link = row.xpath(".//a[@title=\"View full market\"]")
       if(event_link.length==0); next end
       event_link = event_link[0]["href"]
       
@@ -54,6 +57,7 @@ def parse_webpage(doc,match_dict)
       end
       hour = start_time.split(":")[0].to_i
       minutes = start_time.split(":")[1].to_i
+      # puts start_time
       time = Time.mktime(0,minutes,hour,date.day,date.month,date.year,nil,nil,true,"EST")   
       
       team_names = home_name.gsub(" ","_") + "_x_" + away_name.gsub(" ","_")
@@ -65,7 +69,7 @@ def parse_webpage(doc,match_dict)
         match_dict[date] = {}
       end
       
-      if(!match_dict[date].has_key?team_names); puts "new key on #{date}: #{team_names}" end
+      if(!match_dict[date].has_key?team_names); puts "new key on #{date} and #{start_time}: #{team_names}" end
       match_dict[date][team_names] = [filename,time,home_name,away_name,event_link]
     end
   end

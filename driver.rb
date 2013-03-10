@@ -18,29 +18,50 @@ def update_match(link,filename)
   res = http.get(path)
   doc = Nokogiri::HTML(res.body)
 
-  markets = doc.xpath("//em[@class=\"market-title\"]")
-  markets.each do |market| 
-    if(market.content.strip!="Match Odds") then next end
-      
-    in_play = "not_in_play"
-    in_play_nodes = market.parent.parent.xpath(".//span[@title=\"In-play\"]")
-    if(in_play_nodes.length > 0) then
-      if( !in_play_nodes[0]["class"].end_with?("hidden")); in_play = "in_play" end
-    end
+  # ff = File.new("./test.html","w")
+  # ff.write(doc)
+  # ff.close()
+  
+  # ff = File.new("./test.html","r")
+  # doc = ""
+  # while(line = ff.gets); doc += line end
+  # doc = Nokogiri::HTML(doc)
+  
+  matched_val = "nil"
+  in_play = "not_in_play"
+  matched_val_nodes = doc.xpath("//span[@class=\"total-matched-val\"]")
+  if(matched_val_nodes.length > 0)
+    matched_val = matched_val_nodes[0].content.strip.gsub(",","")
     
-    odds_table = market.parent.parent.next.next.xpath(".//table[@class=\"runner-table\"]")[0]
-    rows = odds_table.xpath(".//tr[@class]")
-    
-    rows.each do |row|
-      cols = row.xpath(".//td")
-      name = cols[0].xpath(".//div[@class=\"runner-name\"]//span")[0].content
-      
-      back_price = cols[1].xpath(".//span[@class=\"price\"]")[0].content.strip
-      lay_price = cols[2].xpath(".//span[@class=\"price\"]")[0].content.strip
-      puts "#{time} | #{name} | #{back_price} | #{lay_price} | #{in_play}"
-      file.write(time.to_s + " | " + name + " | " + back_price + " | " + lay_price + " | " + in_play + "\n")
+    if(matched_val_nodes[0].parent.parent.xpath(".//span[@title=\"In-play\"]").length > 0)
+        in_play = "in_play"
     end
-    break
+  end
+  
+  puts "#{matched_val} | #{in_play}"
+  file.write(matched_val + " | " + in_play + "\n")
+  
+  runners = doc.xpath("//td[@class=\"runner-name\"]")
+  runners.each do |runner|
+    # team name
+    name = runner.xpath(".//span[@class=\"sel-name\"]")[0].content.strip
+    
+    # collect all the possible bets
+    bets = ""
+    backs = runner.parent.xpath(".//button[@data-bettype=\"B\"]")
+    backs.each do |back| 
+      price = back.xpath(".//span[@class=\"price\"]")[0].content.strip
+      size = back.xpath(".//span[@class=\"size\"]")[0].content.strip.gsub(",","")
+      bets += "B | " + price + " | " + size + " | "
+    end
+    lays = runner.parent.xpath(".//button[@data-bettype=\"L\"]")
+    lays.each do |back| 
+      price = back.xpath(".//span[@class=\"price\"]")[0].content.strip
+      size = back.xpath(".//span[@class=\"size\"]")[0].content.strip.gsub(",","")
+      bets += "L | " + price + " | " + size + " | "
+    end
+    puts "#{name} | #{bets}"
+    file.write(name + " | " + bets + "\n")
   end
   file.close()
 end
@@ -48,6 +69,11 @@ end
 min_time_diff = 1.0
 if(ARGV.length > 0) then
   min_time_diff = ARGV[0].to_f
+end
+
+max_time_diff = -2.5
+if(ARGV.length > 1) then
+  max_time_diff = ARGV[1].to_f
 end
 
 while(true) do
@@ -64,6 +90,7 @@ while(true) do
           time_diff = (time - now)/60/60  # in hours
           # puts "#{time} | #{now} | #{time_diff} | #{min_time_diff}"
           if time_diff > min_time_diff; next end
+          if time_diff < max_time_diff; next end
           puts "#{date} | #{filename} | #{time} | #{home_name} | #{away_name} | #{event_link}"
           update_match(event_link,filename)
       end
