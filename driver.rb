@@ -38,6 +38,11 @@ def update_match(link,filename)
   file.close()
 end
 
+min_time_diff = 1.0
+if(ARGV.length > 1) then
+  min_time_diff = ARGV[0].to_f
+end
+
 while(true) do
   now = Time.now()
   begin
@@ -50,7 +55,7 @@ while(true) do
           away_name = info[3]
           event_link = info[4]
           time_diff = (time - now)/60/60  # in hours
-          if time_diff > 1; next end
+          if time_diff > min_time_diff; next end
           puts "#{date} | #{filename} | #{time} | #{home_name} | #{away_name} | #{event_link}"
           update_match(event_link,filename)
       end
