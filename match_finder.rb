@@ -18,10 +18,11 @@ def load_existing(filename)
     time = Time.parse(split[2].strip)
     home_name = split[3].strip
     away_name = split[4].strip
+    event_link = split[5].strip
     team_names = home_name.gsub(" ","_") + "_x_" + away_name.gsub(" ","_")
     
     if(!matches.has_key? date); matches[date] = {} end
-    matches[date][team_names] = [filename,time,home_name,away_name]
+    matches[date][team_names] = [filename,time,home_name,away_name,event_link]
   end
   return matches
 end
@@ -57,6 +58,12 @@ def parse_webpage(doc,match_dict)
       if(start_time.length==0); next end
       start_time = start_time[0].content.strip
       
+      # puts row
+      # break
+      event_link = row.xpath(".//a")
+      if(event_link.length==0); next end
+      event_link = event_link[0]["href"]
+      
       if(current_date_str != "Today") then
         split = current_date_str.split(",")
         if(split.length < 2); next end
@@ -79,7 +86,7 @@ def parse_webpage(doc,match_dict)
       end
       
       if(!match_dict[date].has_key?team_names); puts "new key on #{date}: #{team_names}" end
-      match_dict[date][team_names] = [filename,time,home_name,away_name]
+      match_dict[date][team_names] = [filename,time,home_name,away_name,event_link]
     end
   end
   return match_dict
@@ -93,8 +100,9 @@ def write_results(match_dict,filename)
       time = info[1]
       home_name = info[2]
       away_name = info[3]
-      puts "#{date} | #{filename} | #{time} | #{home_name} | #{away_name}"
-      output_file.write(date.to_s + " | " + filename + " | " + time.to_s + " | " + home_name + " | " + away_name + "\n")
+      event_link = info[4]
+      puts "#{date} | #{filename} | #{time} | #{home_name} | #{away_name} | #{event_link}"
+      output_file.write(date.to_s + " | " + filename + " | " + time.to_s + " | " + home_name + " | " + away_name + " | " + event_link + "\n")
     end  
   end
   output_file.close()
