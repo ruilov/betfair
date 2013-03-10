@@ -55,7 +55,7 @@ while(true) do
           away_name = info[3]
           event_link = info[4]
           time_diff = (time - now)/60/60  # in hours
-          puts "#{time} | #{now} | #{time_diff} | #{min_time_diff}"
+          # puts "#{time} | #{now} | #{time_diff} | #{min_time_diff}"
           if time_diff > min_time_diff; next end
           puts "#{date} | #{filename} | #{time} | #{home_name} | #{away_name} | #{event_link}"
           update_match(event_link,filename)
