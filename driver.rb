@@ -66,33 +66,52 @@ def update_match(link,filename)
   file.close()
 end
 
-min_time_diff = 1.0
-if(ARGV.length > 0) then
-  min_time_diff = ARGV[0].to_f
+def last_match_update(filename)
+  begin
+    last_line = IO.readlines(filename)[-1]
+    return parse_match_line(last_line)
+  rescue Exception => e
+    return nil
+  end
 end
 
-max_time_diff = -2.5
+start_time_offset = -1.0
+if(ARGV.length > 0) then
+  start_time_offset = ARGV[0].to_f
+end
+
+end_time_offset = 2.5
 if(ARGV.length > 1) then
-  max_time_diff = ARGV[1].to_f
+  end_time_offset = ARGV[1].to_f
 end
 
 while(true) do
   now = get_now()
+  today = Date.parse(now.to_s)
   begin
     match_list = load_match_list("./match_list.txt")
-    match_list.each_key do |date| 
+    match_list.each_key do |date|
       match_list[date].each_pair do |team_names,info|
-          filename = info[0]
-          time = info[1]
-          home_name = info[2]
-          away_name = info[3]
-          event_link = info[4]
-          time_diff = (time - now)/60/60  # in hours
-          # puts "#{time} | #{now} | #{time_diff} | #{min_time_diff}"
-          if time_diff > min_time_diff; next end
-          if time_diff < max_time_diff; next end
-          puts "#{date} | #{filename} | #{time} | #{home_name} | #{away_name} | #{event_link}"
-          update_match(event_link,filename)
+        if date == today then
+          # if the date is toady, then we do some real time logging
+          time_diff = (now-info[:time])/60/60  # in hours
+          # puts "#{info[:time]} | #{now} | #{time_diff} | #{start_time_offset}"
+          if time_diff < start_time_offset; next end
+          if time_diff > end_time_offset; next end
+          puts "#{date} | #{info[:filename]} | #{info[:time]} | #{info[:home_name]} | #{info[:away_name]} | #{info[:event_link]}"
+          update_match(info[:event_link],info[:filename])
+        elsif date - today > 0
+          # if the date is not today then we only collect is every 12 hours
+          last_info = last_match_update(info[:filename])
+          time_diff = 1000
+          if(last_info!=nil) then
+            time_diff = (now - last_info[:time])/60/60 # in hours
+          end
+          if time_diff > 12
+            puts "#{date} | #{info[:filename]} | #{info[:time]} | #{info[:home_name]} | #{info[:away_name]} | #{info[:event_link]}"
+            update_match(info[:event_link],info[:filename]) 
+          end
+        end  
       end
     end
   rescue Exception => e
@@ -100,5 +119,6 @@ while(true) do
     puts e
     puts e.backtrace.inspect
   end
+  puts "#{now}: sleeping..."
   sleep(60) # in seconds
 end

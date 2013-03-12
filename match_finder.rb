@@ -70,7 +70,13 @@ def parse_webpage(doc,match_dict)
       end
       
       if(!match_dict[date].has_key?team_names); puts "new key on #{date} and #{start_time}: #{team_names}" end
-      match_dict[date][team_names] = [filename,time,home_name,away_name,event_link]
+      match_dict[date][team_names] = {
+        :filename => filename,
+        :time => time,
+        :home_name => home_name,
+        :away_name => away_name,
+        :event_link => event_link
+      }
     end
   end
   return match_dict
@@ -80,11 +86,11 @@ def write_results(match_dict,filename)
   output_file = File.new(filename,"w")
   match_dict.each_key do |date| 
     match_dict[date].each_pair do |team_names,info|
-      filename = info[0]
-      time = info[1]
-      home_name = info[2]
-      away_name = info[3]
-      event_link = info[4]
+      filename = info[:filename]
+      time = info[:time]
+      home_name = info[:home_name]
+      away_name = info[:away_name]
+      event_link = info[:event_link]
       puts "#{date} | #{filename} | #{time} | #{home_name} | #{away_name} | #{event_link}"
       output_file.write(date.to_s + " | " + filename + " | " + time.to_s + " | " + home_name + " | " + away_name + " | " + event_link + "\n")
     end  
