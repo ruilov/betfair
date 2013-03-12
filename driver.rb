@@ -107,7 +107,7 @@ while(true) do
           if(last_info!=nil) then
             time_diff = (now - last_info[:time])/60/60 # in hours
           end
-          if time_diff > 1/60
+          if time_diff > 12
             puts "#{date} | #{info[:filename]} | #{info[:time]} | #{info[:home_name]} | #{info[:away_name]} | #{info[:event_link]}"
             update_match(info[:event_link],info[:filename]) 
           end
