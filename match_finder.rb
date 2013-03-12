@@ -47,12 +47,17 @@ def parse_webpage(doc,match_dict)
       if(event_link.length==0); next end
       event_link = event_link[0]["href"]
       
-      if(current_date_str != "Today") then
+      if(current_date_str != "Today" and current_date_str != "Tomorrow") then
         split = current_date_str.split(",")
         if(split.length < 2); next end
         date_str = split[1].strip
         date = Date.parse(date_str)
+      elsif current_date_str == "Tomorrow"
+        date = Date.today() + 1
+      elsif current_date_str == "Today"
+        date = Date.today()
       else
+        puts "ERROR date #{current_date_str}"
         date = Date.today()
       end
       hour = start_time.split(":")[0].to_i
@@ -91,17 +96,23 @@ def write_results(match_dict,filename)
       home_name = info[:home_name]
       away_name = info[:away_name]
       event_link = info[:event_link]
-      puts "#{date} | #{filename} | #{time} | #{home_name} | #{away_name} | #{event_link}"
+      # puts "#{date} | #{filename} | #{time} | #{home_name} | #{away_name} | #{event_link}"
       output_file.write(date.to_s + " | " + filename + " | " + time.to_s + " | " + home_name + " | " + away_name + " | " + event_link + "\n")
     end  
   end
   output_file.close()
 end
 
+competitions = [
+  "http://www.betfair.com/exchange/football/competition?id=2490975", # paulista
+  "http://www.betfair.com/exchange/football/competition?id=62815" # libertadores
+]
+
 match_dict = load_match_list("./match_list.txt")
-competition_path = "http://www.betfair.com/exchange/football/competition?id=2490975"
-doc = webpage_request(competition_path)
-new_match_dict = parse_webpage(doc,match_dict)
-write_results(new_match_dict,"./match_list.txt")
+competitions.each do |competition_path|
+  doc = webpage_request(competition_path)
+  match_dict = parse_webpage(doc,match_dict)
+end
+write_results(match_dict,"./match_list.txt")
 
 
