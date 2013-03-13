@@ -53,12 +53,12 @@ def parse_webpage(doc,match_dict)
         date_str = split[1].strip
         date = Date.parse(date_str)
       elsif current_date_str == "Tomorrow"
-        date = Date.today() + 1
+        date = get_today() + 1
       elsif current_date_str == "Today"
-        date = Date.today()
+        date = get_today()
       else
         puts "ERROR date #{current_date_str}"
-        date = Date.today()
+        date = get_today()
       end
       hour = start_time.split(":")[0].to_i
       minutes = start_time.split(":")[1].to_i

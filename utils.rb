@@ -58,3 +58,8 @@ def get_now()
     t -= (t.gmtoff+MY_TZ_OFFSET)
     return t
 end
+
+def get_today()
+  return Date.parse(get_now.strftime('%Y/%m/%d'))
+end
+end
