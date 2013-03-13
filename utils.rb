@@ -62,4 +62,3 @@ end
 def get_today()
   return Date.parse(get_now.strftime('%Y/%m/%d'))
 end
-end
