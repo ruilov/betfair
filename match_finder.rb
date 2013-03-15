@@ -18,7 +18,9 @@ end
 
 def parse_webpage(doc,match_dict)
   current_date_str = nil
-  rows = doc.xpath("//h2[@class=\"competition-header open\"]")[0].parent.parent.parent.parent.xpath(".//tbody")
+  nodes = doc.xpath("//h2[@class=\"competition-header open\"]")
+  if(nodes.length == 0); return match_dict end
+  rows = nodes[0].parent.parent.parent.parent.xpath(".//tbody")
   rows.each do |row|
     date_header = row.xpath(".//h2[@class=\"competition-header open\"]")
     if(date_header.length>0) then
