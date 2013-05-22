@@ -106,8 +106,9 @@ def write_results(match_dict,filename)
 end
 
 competitions = [
-  "http://www.betfair.com/exchange/football/competition?id=2490975", # paulista
-  "http://www.betfair.com/exchange/football/competition?id=62815" # libertadores
+  # "http://www.betfair.com/exchange/football/competition?id=2490975", # paulista
+  # "http://www.betfair.com/exchange/football/competition?id=62815" # libertadores
+  "http://www.betfair.com/exchange/football/competition?id=89219"
 ]
 
 match_dict = load_match_list("./match_list.txt")
