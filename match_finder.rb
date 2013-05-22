@@ -108,7 +108,8 @@ end
 competitions = [
   # "http://www.betfair.com/exchange/football/competition?id=2490975", # paulista
   # "http://www.betfair.com/exchange/football/competition?id=62815" # libertadores
-  "http://www.betfair.com/exchange/football/competition?id=89219"
+  # "http://www.betfair.com/exchange/football/competition?id=89219" # copa do brasil
+  "http://www.betfair.com/exchange/football/competition?id=13" # brasileiro
 ]
 
 match_dict = load_match_list("./match_list.txt")
