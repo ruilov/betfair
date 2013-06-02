@@ -105,18 +105,52 @@ def write_results(match_dict,filename)
   output_file.close()
 end
 
-competitions = [
-  # "http://www.betfair.com/exchange/football/competition?id=2490975", # paulista
-  # "http://www.betfair.com/exchange/football/competition?id=62815" # libertadores
-  # "http://www.betfair.com/exchange/football/competition?id=89219" # copa do brasil
-  "http://www.betfair.com/exchange/football/competition?id=13" # brasileiro
-]
-
-match_dict = load_match_list("./match_list.txt")
-competitions.each do |competition_path|
-  doc = webpage_request(competition_path)
-  match_dict = parse_webpage(doc,match_dict)
+def match_list_time_put(t)
+  filename = "match_list_time.txt"
+  output_file = File.new(filename,"w")
+  output_file.write(t.strftime("%Y-%m-%d %H:%M:%S"))
+  output_file.close()
 end
-write_results(match_dict,"./match_list.txt")
 
+def match_list_time_get()
+  filename = "match_list_time.txt"
+  begin
+    last_line = IO.readlines(filename)[-1]
+    return Time.parse(last_line.strip)
+  rescue Exception => e
+    return nil
+  end
+end
 
+def update_match_list(match_list_update_period, now)
+  competitions = [
+    # "http://www.betfair.com/exchange/football/competition?id=2490975", # paulista
+    # "http://www.betfair.com/exchange/football/competition?id=62815" # libertadores
+    # "http://www.betfair.com/exchange/football/competition?id=89219" # copa do brasil
+    "http://www.betfair.com/exchange/football/competition?id=13" # brasileiro
+  ]
+
+  begin
+    last_update = match_list_time_get()
+    if(last_update != nil) then
+      hours_since = (now - last_update) / 3600
+      if(hours_since < match_list_update_period); return end
+    end
+    
+    puts "#{now}: updating the match list"
+    
+    match_dict = load_match_list("./match_list.txt")
+    competitions.each do |competition_path|
+      doc = webpage_request(competition_path)
+      match_dict = parse_webpage(doc,match_dict)
+    end
+    write_results(match_dict,"./match_list.txt")
+    
+    match_list_time_put(now)
+    puts "#{now}: done updating the match list"
+  rescue Exception => e
+    puts "Error at #{now}"
+    puts e
+    puts e.backtrace.inspect
+  end
+end

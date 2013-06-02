@@ -6,6 +6,7 @@ require "uri"
 require 'nokogiri'
 require "./net.rb"
 require "./utils.rb"
+require "./match_finder.rb"
 
 STDOUT.sync = true
 
@@ -75,18 +76,7 @@ def last_match_update(filename)
   end
 end
 
-start_time_offset = -1.0
-if(ARGV.length > 0) then
-  start_time_offset = ARGV[0].to_f
-end
-
-end_time_offset = 2.5
-if(ARGV.length > 1) then
-  end_time_offset = ARGV[1].to_f
-end
-
-while(true) do
-  now = get_now()
+def update_all_matches(start_time_offset,end_time_offset,now)
   today = Date.parse(now.to_s)
   begin
     match_list = load_match_list("./match_list.txt")
@@ -119,6 +109,24 @@ while(true) do
     puts e
     puts e.backtrace.inspect
   end
+end
+
+start_time_offset = -1.0
+if(ARGV.length > 0) then
+  start_time_offset = ARGV[0].to_f
+end
+
+end_time_offset = 2.5
+if(ARGV.length > 1) then
+  end_time_offset = ARGV[1].to_f
+end
+
+match_list_update_period = 5.0/60 # update the match list every 24 hours
+
+while(true) do
+  now = get_now()
+  update_all_matches(start_time_offset,end_time_offset,now)
+  update_match_list(match_list_update_period,now)  
   puts "#{now}: sleeping..."
   sleep(60) # in seconds
 end
