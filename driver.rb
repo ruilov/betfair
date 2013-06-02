@@ -121,7 +121,7 @@ if(ARGV.length > 1) then
   end_time_offset = ARGV[1].to_f
 end
 
-match_list_update_period = 5.0/60 # update the match list every 24 hours
+match_list_update_period = 24 # update the match list every 24 hours
 
 while(true) do
   now = get_now()
